@@ -146,80 +146,8 @@ get_header(); ?>
 				<h2 class="section-title">Aktualności jednostek</h2>
 
 				<?php //dynamic_sidebar('news-bip'); ?>
-				<?php //echo do_shortcode('[mpr_display items=3 showsiteinfo=no showdivider=no disableheading=yes days=2 excludesites=1]'); ?>
-				<?php
-				// $feed = simplexml_load_file('https://bip.pokrzywnica.pl/rss');
-				// $postsFromBip = $feed->channel;
-				// foreach ( $postsFromBip->item as $postBip  ) {
-				//     echo '<a href="'.$postBip->link.'">'.$postBip->title.'</a>';
-				// }
+				
 
-				// $postBip = json_decode(file_get_contents('https://bip.pokrzywnica.pl/rss/wp-json/wp/v2/posts?filter[posts_per_page]=6&filter[orderby]=date'));
-				// foreach ( $postsBip as $postBip ) {
-				//     echo '<a href="'.$postBip->link.'">'.$postBip->title->rendered.'</a>';
-				// }
-
-				// $rss_query = new WP_Query(array(							
-				// 	'post_type' => 'wprss_feed_item',
-				// 	'post_status' => 'publish',
-				// 	'orderby' => 'date',
-				// 	'posts_per_page' => 4,
-				// 	'order' => 'DESC'													
-				// ));
-				//while ($rss_query->have_posts()) : $rss_query->the_post(); ?>
-					<!-- <a class="" href="<?php// echo get_the_permalink(); ?>" title="<?php// the_title(); ?>"><?php// echo the_title(); ?></a> -->
-				<?php //endwhile; ?>
-				<?php //wp_reset_query() ?>	
-<?php
-				include_once( ABSPATH . WPINC . '/feed.php' );
- 
-// Get a SimplePie feed object from the specified feed source.
-$rss = fetch_feed( 'https://bip.pokrzywnica.pl/rss' );
-// $rss = fetch_feed( 'http://www.forbes.com/taxes-law/feed2/', 'http://www.wsj.com/xml/rss/3_7031.xml' );
- 
-/*
-$rsslist = array(   'http://www.forbes.com/taxes-law/feed2/',
-                    'http://www.wsj.com/xml/rss/3_7031.xml',
-                    'http://www.taxlawroundup.com/?feed=rss'
-                );
-$rss = fetch_feed($rsslist);
-*/
- 
-$maxitems = 0;
- 
-if ( ! is_wp_error( $rss ) ) : // Checks that the object is created correctly
- 
-    // Figure out how many total items there are, but limit it to 5. 
-    $maxitems = $rss->get_item_quantity( 7 ); 
- 
-    // Build an array of all the items, starting with element 0 (first element).
-    $rss_items = $rss->get_items( 0, $maxitems );
- 
-endif;
-?>
- 
- 
-    <?php if ( $maxitems == 0 ) : ?>
-        <ul><li><?php _e( 'No items', 'my-text-domain' ); ?></li></ul>
-    <?php else : ?>
-        <?php // Loop through each feed item and display each item as a hyperlink. ?>
-        <?php foreach ( $rss_items as $item ) : 
- 
-echo '<div class="rss-feed-container">';
-if ($enclosure = $item->get_enclosure())
-                            {   
-                                echo '<img src="' . $enclosure->get_thumbnail() . '" class="feed-thumb" style="float:left;width:200px;margin-right:10px;" />';
-                            }
-?>
-            
-                <a href="<?php echo esc_url( $item->get_permalink() ); ?>" title="<?php printf( __( 'Posted %s', 'my-text-domain' ), $item->get_date('j F Y | g:i a') ); ?>" target="_blank">
-                    <?php echo esc_html( $item->get_title() ); ?></a> - <?php echo esc_html( $item->get_date('F j, Y') ); ?>
-                
-                  <p><?php echo substr($item->get_description(), 0, 150); ?>
-                        <a href="<?php echo esc_url( $item->get_permalink() ); ?>" title="<?php echo esc_html( $item->get_title() ); ?>">Continue Reading</a></p>
-            <?php echo '</div>'; ?>
-        <?php endforeach; ?>
-    <?php endif; ?>
 				
 				
 				<?php 
@@ -237,19 +165,19 @@ if ($enclosure = $item->get_enclosure())
 				    4 => '',				   
 				); 
 
-				$myrss = get_posts(
-					array(
-						'post_type' => 'wprss_feed_item',
-						'posts_per_page' => 3
-				));
+				// $myrss = get_posts(
+				// 	array(
+				// 		'post_type' => 'wprss_feed_item',
+				// 		'posts_per_page' => 3
+				// ));
 
-				foreach ($myrss as $rss) {
-					echo '<li>'.$rss->guid .=
-					 $rss->post_date .=
-					 $rss->post_title .'</li>';
-					echo get_permalink();
-					//var_dump($rss);
-				}
+				// foreach ($myrss as $rss) {
+				// 	echo '<li>'.$rss->guid .=
+				// 	 $rss->post_date .=
+				// 	 $rss->post_title .'</li>';
+				// 	echo get_permalink();
+				// 	//var_dump($rss);
+				// }
 			
 				
 
@@ -382,8 +310,35 @@ if ($enclosure = $item->get_enclosure())
 			global $wpdb;
 			$rss_posts = $wpdb->get_results("SELECT * FROM rssdata");
 			
-			?>
+		?>
 
+		<?php
+		if(isset($_POST['new_post']) == '1') {
+			foreach ($rss_posts as $rss_post) {
+				$new_rss = array(
+					'post_title' => $rss_post->title,
+					'post_content' => $rss_post->link,
+					'post_status' => 'publish',
+					'post_type' => $rss_post->post_type,
+				);
+
+				// $tocpt = wp_insert_post($new_rss);
+				// wp_set_post_terms($tocpt, $_POST['from_rss'], 'from_rss', false);
+
+				$post_id = wp_insert_post($new_rss);
+				$post = get_post($post_id);
+			}
+		}
+		?>
+<form method="post" action="">
+
+      <input name="post_title" type="text" />
+
+      <input type="hidden" name="new_post" value="1" />
+      <input type="submit" name="submit" value="Post" />
+
+</form>
+<!-- 
 			<table class="table">
 
 			<?php foreach(array_slice($rss_posts,0,5) as $rss_post){ ?>
@@ -394,9 +349,21 @@ if ($enclosure = $item->get_enclosure())
 			 <td><center>data: <?php echo $rss_post->post_date; ?></center></td>			 
 			</tr>
 
-			<?php } ?>
+			<?php } ?> -->
 
-			</table>
+			<!-- </table> -->
+			<?php
+$post_query = new WP_Query(array(
+						'posts_per_page' => 4,
+						'post_type' => 'rss_post',
+						'post_status' => 'publish',
+						'orderby' => 'date',
+						'order' => 'DESC'						
+					));
+					while ($post_query->have_posts()) : $post_query->the_post(); ?>
+						<div><?php echo the_title(); ?></div>
+
+					<?php endwhile; ?>
 
     <article class="small-post">
 						<div class="small-post__cont">
