@@ -314,6 +314,11 @@ if ($enclosure = $item->get_enclosure())
     	
     </script>
 
+
+    <!-- DODAJ TABELE DO BAZY -->
+   <!--  CREATE TABLE IF NOT EXISTS rssdata (id int(11) NOT NULL AUTO_INCREMENT, `title` varchar(255) NOT NULL, 
+  `description` tinytext NOT NULL, `link` tinytext NOT NULL, `post_date` varchar(255), PRIMARY KEY (id)) -->
+
     	<?php
 
     	$servername = "localhost";
@@ -363,7 +368,7 @@ if ($enclosure = $item->get_enclosure())
 			}
 		} else {
 			 $error = $mysqli->errno . ' ' . $mysqli->error;
-		    echo $error; // 1054 Unknown column 'foo' in 'field list'
+		    echo $error; 
 		}
 
 		$mysqli->prepare($unique);
@@ -379,7 +384,7 @@ if ($enclosure = $item->get_enclosure())
 			
 			?>
 
-			<table class="table table-hover">
+			<table class="table">
 
 			<?php foreach(array_slice($rss_posts,0,5) as $rss_post){ ?>
 			
